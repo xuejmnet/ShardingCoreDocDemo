@@ -38,7 +38,7 @@ namespace EFCoreShardingTable
                         Code = "SuperAdmin",
                         Name = "SuperAdminName"
                     });
-
+                    string[] areas = new string[] {"A","B","C" };
                     List<SysUser> users = new List<SysUser>(10);
                     for (int i = 0; i < 10; i++)
                     {
@@ -46,7 +46,8 @@ namespace EFCoreShardingTable
                         {
                             Id = i.ToString(),
                             Name = $"MyName{i}",
-                            SettingCode = settings[i % 3].Code
+                            SettingCode = settings[i % 3].Code,
+                            Area = areas[i % 3]
                         };
                         users.Add(uer);
                     }
@@ -61,6 +62,7 @@ namespace EFCoreShardingTable
                             Payer = $"{i % 10}",
                             Money = 100+new Random().Next(100,3000),
                             OrderStatus = (OrderStatusEnum)(i % 4 + 1),
+                            Area = areas[i % 3],
                             CreationTime = begin.AddDays(i)
                         };
                         orders.Add(order);

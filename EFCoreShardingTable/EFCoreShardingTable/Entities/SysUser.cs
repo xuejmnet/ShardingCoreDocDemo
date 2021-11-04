@@ -18,6 +18,10 @@ namespace EFCoreShardingTable.Entities
         /// user name
         /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// area
+        /// </summary>
+        public string Area { get; set; }
 
         /// <summary>
         /// setting code

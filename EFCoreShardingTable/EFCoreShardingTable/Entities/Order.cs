@@ -23,6 +23,10 @@ namespace EFCoreShardingTable.Entities
         /// </summary>
         public long Money { get; set; }
         /// <summary>
+        /// area
+        /// </summary>
+        public string Area { get; set; }
+        /// <summary>
         /// order status
         /// </summary>
         public OrderStatusEnum OrderStatus { get; set; }
