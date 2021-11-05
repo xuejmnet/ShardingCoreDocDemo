@@ -85,5 +85,12 @@ namespace EFCoreShardingTable.Controllers
             var i = await _myDbContext.SaveChangesAsync();
             return Ok(i);
         }
+        public async Task<IActionResult> Delete()
+        {
+            var i = await _myDbContext.SaveChangesAsync();
+            var sysUser = await _myDbContext.Set<SysUser>().Where(o => o.Id == "9").FirstOrDefaultAsync();
+            _myDbContext.Remove(sysUser);
+            return Ok(i);
+        }
     }
 }
