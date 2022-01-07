@@ -20,20 +20,26 @@ namespace EFCoreSharding
                     .UseSharding<MyDbContext>()//需要添加
                 );
             //额外添加分片配置
-            services.AddShardingConfigure<MyDbContext>((conn, builder) =>
+            services.AddShardingConfigure<MyDbContext>()
+                .AddEntityConfig(op =>
                 {
-                    builder.UseSqlServer(conn);
-                }).Begin(o =>
+                    op.CreateShardingTableOnStart = true;
+                    op.EnsureCreatedWithOutShardingTable = true;
+                    op.UseShardingQuery((conn, builder) =>
+                    {
+                        builder.UseSqlServer(conn);
+                    });
+                    op.UseShardingTransaction((conn, builder) =>
+                    {
+                        builder.UseSqlServer(conn);
+                    });
+                    op.AddShardingTableRoute<OrderVirtualTableRoute>();
+                }).AddConfig(op =>
                 {
-                    o.AutoTrackEntity = true;
-                    o.CreateShardingTableOnStart = true;
-                    o.EnsureCreatedWithOutShardingTable = true;
-                }).AddShardingTransaction((connection, builder) =>
-                {
-                    builder.UseSqlServer(connection);
-                }).AddDefaultDataSource(Guid.NewGuid().ToString("n"),
-                    "Data Source=localhost;Initial Catalog=EFCoreShardingDB;Integrated Security=True;")
-                .AddShardingTableRoute(op => { op.AddShardingTableRoute<OrderVirtualTableRoute>(); }).End();
+                    op.ConfigId = "c1";
+                    op.AddDefaultDataSource(Guid.NewGuid().ToString("n"),
+                        "Data Source=localhost;Initial Catalog=EFCoreShardingDB;Integrated Security=True;");
+                }).EnsureConfig();
 
             var buildServiceProvider = services.BuildServiceProvider();
             //启动必备

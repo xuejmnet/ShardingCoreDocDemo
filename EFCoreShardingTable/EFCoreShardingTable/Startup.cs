@@ -34,26 +34,28 @@ namespace EFCoreShardingTable
         {
 
             services.AddControllers();
-            services.AddShardingDbContext<MyDbContext>((conStr, builder) =>
+            //额外添加分片配置
+            services.AddShardingConfigure<MyDbContext>()
+                .AddEntityConfig(op =>
                 {
-                    builder.UseSqlServer(conStr).UseLoggerFactory(efLogger);
-                }).Begin(op =>
-                {
-                    op.AutoTrackEntity = true;
-                    //如果您使用code-first建议选择false
                     op.CreateShardingTableOnStart = true;
-                    //如果您使用code-first建议修改为fsle
                     op.EnsureCreatedWithOutShardingTable = true;
-                }).AddShardingTransaction((connection, builder) =>
-                {
-                    builder.UseSqlServer(connection).UseLoggerFactory(efLogger);
-                }).AddDefaultDataSource("ds0",
-                    "Data Source=localhost;Initial Catalog=EFCoreShardingTableDB;Integrated Security=True;")
-                .AddShardingTableRoute(op =>
-                {
+                    op.UseShardingQuery((conn, builder) =>
+                    {
+                        builder.UseSqlServer(conn).UseLoggerFactory(efLogger);
+                    });
+                    op.UseShardingTransaction((conn, builder) =>
+                    {
+                        builder.UseSqlServer(conn).UseLoggerFactory(efLogger);
+                    });
                     op.AddShardingTableRoute<SysUserVirtualTableRoute>();
                     op.AddShardingTableRoute<OrderVirtualTableRoute>();
-                }).End();
+                }).AddConfig(op =>
+                {
+                    op.ConfigId = "c1";
+                    op.AddDefaultDataSource(Guid.NewGuid().ToString("n"),
+                        "Data Source=localhost;Initial Catalog=EFCoreShardingTableDB;Integrated Security=True;");
+                }).EnsureConfig();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
