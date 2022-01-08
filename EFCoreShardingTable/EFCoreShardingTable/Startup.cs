@@ -35,7 +35,7 @@ namespace EFCoreShardingTable
 
             services.AddControllers();
             //∂ÓÕ‚ÃÌº”∑÷∆¨≈‰÷√
-            services.AddShardingConfigure<MyDbContext>()
+            services.AddShardingDbContext<MyDbContext>()
                 .AddEntityConfig(op =>
                 {
                     op.CreateShardingTableOnStart = true;

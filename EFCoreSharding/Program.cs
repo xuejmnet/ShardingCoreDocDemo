@@ -15,10 +15,7 @@ namespace EFCoreSharding
             IServiceCollection services = new ServiceCollection();
             services.AddLogging();
             //原来的dbcontext配置
-            services.AddDbContext<MyDbContext>(o =>
-                o.UseSqlServer("Data Source=localhost;Initial Catalog=EFCoreShardingDB;Integrated Security=True;")
-                    .UseSharding<MyDbContext>()//需要添加
-                );
+            services.AddDbContext<MyDbContext>(DIExtension.UseDefaultSharding<MyDbContext>);
             //额外添加分片配置
             services.AddShardingConfigure<MyDbContext>()
                 .AddEntityConfig(op =>
